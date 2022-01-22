@@ -1,5 +1,4 @@
 import discord
-from flask import session
 from models import User, engine, Base, Session
 
 Base.metadata.create_all(engine)
