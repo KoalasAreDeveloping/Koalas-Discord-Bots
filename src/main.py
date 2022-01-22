@@ -63,10 +63,10 @@ Commands:
                     """, mention_author=False)
                 elif message.content.startswith('&&pride'):
                     await message.reply(":rainbow_flag: love is love, everyone matters, no matter who they love or are. :rainbow_flag:", mention_author=False)
-                elif message.content.find("69") != -1:
-                    await message.reply("69? Nice!", mention_author=False)
                 elif message.content.startswith('&&github'):
                     await message.reply("https://github.com/KoalasAreDeveloping/KoalaBot", mention_author=False)
+                elif message.content.find("69") != -1:
+                    await message.reply("69? Nice!", mention_author=False)
         else:
             new_user = User(user=author, user_lvl=5)
             session.add(new_user)
