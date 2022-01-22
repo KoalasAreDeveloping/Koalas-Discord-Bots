@@ -30,8 +30,8 @@ class MyClient(discord.Client):
     async def on_message(self, message):
         author = message.author.name + message.author.discriminator
         user = session.query(User).filter(User.user==author).first()
-        if message.author.name != 'KoalaBot':
-            if user:
+        if user:
+            if message.author.name != 'KoalaBot':
                 user.user_lvl = user.user_lvl + 5
                 if message.content.startswith('&&lvl'):
                     await message.reply("Your level is: " + str(user.user_lvl), mention_author=False)
@@ -59,7 +59,7 @@ Command Formats:
     &&help
     &&leaderboard
     &&lvl
-""", mention_author=False)
+                    """, mention_author=False)
                 elif message.content.startswith('&&pride'):
                     await message.reply(":rainbow_flag: love is love, everyone matters, no matter who they love or are. :rainbow_flag:", mention_author=False)
                 elif message.content.find("69") != -1:
