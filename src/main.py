@@ -54,16 +54,18 @@ class MyClient(discord.Client):
 [] = required argument
 () = optional argument
 
-Command Formats:
-    &&insult [@user]
-    &&help
-    &&leaderboard
-    &&lvl
+Commands:
+    - &&insult [@user] - Returns a random insult directed at the mention user.
+    - &&help - Returns this help text.
+    - &&leaderboard - Returns the top 3 users.
+    - &&lvl - Returns a user's level.
+    - &&github - Returns link to the GitHub repository.
                     """, mention_author=False)
                 elif message.content.startswith('&&pride'):
                     await message.reply(":rainbow_flag: love is love, everyone matters, no matter who they love or are. :rainbow_flag:", mention_author=False)
                 elif message.content.find("69") != -1:
                     await message.reply("69? Nice!", mention_author=False)
+                elif message.content.startswith('&&github'):
 
         else:
             new_user = User(user=author, user_lvl=5)
