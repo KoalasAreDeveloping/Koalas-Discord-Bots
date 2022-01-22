@@ -12,6 +12,6 @@ engine = create_engine(connection_string, echo=True)
 
 class User(Base):
     __tablename__ = 'User'
-    id = Column(Integer, primary_key=True)
-    user = Column(String(1000), unique=True)
+    user_name = Column(String(1000))
     user_lvl = Column(Integer)
+    user_id = Column(Integer, primary_key=True)

@@ -5,7 +5,7 @@ import random as rdm
 
 Base.metadata.create_all(engine)
 session = Session(bind=engine)
-
+embed_col = 0x7289DA
 class Leaderboard:
     def __init__(self):
         self.leaderboard = []
@@ -15,7 +15,7 @@ class Leaderboard:
 
     def run(self):
         for user in session.query(User).all():
-            self.leaderboard.append({"Lvl" : user.user_lvl, "User" : user.user})
+            self.leaderboard.append({"Lvl" : user.user_lvl, "User" : user.user_name})
         self.leaderboard.sort(reverse=True, key=self.sort)
 
     def get_data(self):
@@ -28,47 +28,62 @@ class MyClient(discord.Client):
         print('Logged on as {0}!'.format(self.user))
 
     async def on_message(self, message):
-        author = message.author.name + message.author.discriminator
-        user = session.query(User).filter(User.user==author).first()
+        author_id = message.author.id
+        user = session.query(User).filter(User.user_id==author_id).first()
         if user:
             if message.author.name != 'KoalaBot':
                 user.user_lvl = user.user_lvl + 5
                 if message.content.startswith('&&lvl'):
-                    await message.reply("Your level is: " + str(user.user_lvl), mention_author=False)
+                    if message.content.find("<@!") == -1:
+                        embedVar = discord.Embed(title=message.author.name + "'s Level", description=str(user.user_lvl), color=embed_col)
+                    else:
+                        msg = message.content
+                        msg = msg.split()
+                        msg = msg[1]
+                        mention_id = msg[3:-1]
+                        user_temp = session.query(User).filter(User.user_id==mention_id).first()
+                        embedVar = discord.Embed(title=user_temp.user_name + "'s Level", description=str(user_temp.user_lvl), color=embed_col)
+                    await message.reply(embed=embedVar, mention_author=False)
+
                 elif message.content.startswith('&&insult'):
                     msg = message.content
                     msg = msg.split()
                     insults = ["You are older that the Queen", "You sure that you are old enough to use Discord?", "You have the thought process of a child", "Your like Pixel, but worse", "You are as evil as Gareth, but even he has morals or something", "You don't deserve to be insulted, you are actually a decent person"]
                     value = rdm.randint(0, len(insults) - 1)
-                    await message.reply(insults[value] + ", " + msg[1] + " :p", mention_author=False)
+                    embedVar = discord.Embed(title="Insulting " + msg[1] + " :p", description=insults[value] + ".", color=embed_col)
+                    await message.reply(embed=embedVar, mention_author=False)
+
                 elif message.content.startswith('&&leaderboard'):
                     data = Leaderboard()
                     data = data.get_data()
                     R1 = data[0]
                     R2 = data[1]
                     R3 = data[2]
-                    LB_str ="#1: " + R1['User'] + " with " + str(R2['Lvl']) + " levels" + "\n#2: " + R2['User'] + " with " + str(R2['Lvl']) + " levels" + "\n#3: " + R3['User'] + " with " + str(R3['Lvl']) + " levels"
-                    await message.reply(LB_str, mention_author=False)
-                elif message.content.startswith('&&help'):
-                    await message.reply("""
-[] = required argument
-() = optional argument
+                    embedVar = discord.Embed(title="Rankings", description="", color=embed_col)
+                    embedVar.add_field(name="First Place", value=R1['User'] + " with " + str(R2['Lvl']) + " levels", inline=False)
+                    embedVar.add_field(name="second Place", value=R2['User'] + " with " + str(R2['Lvl']) + " levels", inline=False)
+                    embedVar.add_field(name="Third Place", value=R3['User'] + " with " + str(R3['Lvl']) + " levels", inline=False)
+                    await message.reply(embed=embedVar, mention_author=False)
 
-Commands:
-    - &&insult [@user] - Returns a random insult directed at the mention user.
-    - &&help - Returns this help text.
-    - &&leaderboard - Returns the top 3 users.
-    - &&lvl - Returns a user's level.
-    - &&github - Returns link to the GitHub repository.
-                    """, mention_author=False)
+                elif message.content.startswith('&&help'):
+                    embedVar = discord.Embed(title="Help", description="", color=embed_col)
+                    embedVar.add_field(name="Prerequisites", value="[] = required argument \n() = optional argument", inline=False)
+                    embedVar.add_field(name="Commands", value="- &&insult [@user] - Returns a random insult directed at the mention user.\n- &&help - Returns this help text.\n- &&leaderboard - Returns the top 3 users.\n- &&lvl (@user) - Returns a user's level.\n- &&github - Returns link to the GitHub repository.", inline=False)
+                    await message.reply(embed=embedVar, mention_author=False)
+
                 elif message.content.startswith('&&pride'):
-                    await message.reply(":rainbow_flag: love is love, everyone matters, no matter who they love or are. :rainbow_flag:", mention_author=False)
+                    embedVar = discord.Embed(title="Pride", description=":rainbow_flag: love is love, everyone matters, no matter who they love or are. :rainbow_flag:", color=embed_col)
+                    await message.reply(embed=embedVar, mention_author=False)
+
                 elif message.content.startswith('&&github'):
-                    await message.reply("https://github.com/KoalasAreDeveloping/KoalaBot", mention_author=False)
+                    embedVar = discord.Embed(title="GitHub", description="https://github.com/KoalasAreDeveloping/KoalaBot", color=embed_col)                
+                    await message.reply(embed=embedVar, mention_author=False)
+
                 elif message.content.find("69") != -1:
-                    await message.reply("69? Nice!", mention_author=False)
+                    embedVar = discord.Embed(title="69?", description="Nice!", color=embed_col)
+                    await message.reply(embed=embedVar, mention_author=False)
         else:
-            new_user = User(user=author, user_lvl=5)
+            new_user = User(user_name=message.author.name, user_lvl=5, user_id=message.author.id)
             session.add(new_user)
             session.commit()
 
