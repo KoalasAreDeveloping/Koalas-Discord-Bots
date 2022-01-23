@@ -1,4 +1,3 @@
-from uuid import RFC_4122
 import discord
 from models import User, engine, Base, Session
 import random as rdm
@@ -68,7 +67,7 @@ class MyClient(discord.Client):
                 elif message.content.startswith('&&help'):
                     embedVar = discord.Embed(title="Help", description="", color=embed_col)
                     embedVar.add_field(name="Prerequisites", value="[] = required argument \n() = optional argument", inline=False)
-                    embedVar.add_field(name="Commands", value="- &&insult [@user] - Returns a random insult directed at the mention user.\n- &&help - Returns this help text.\n- &&leaderboard - Returns the top 3 users.\n- &&lvl (@user) - Returns a user's level.\n- &&github - Returns link to the GitHub repository.", inline=False)
+                    embedVar.add_field(name="Commands", value="- &&insult [@user] - Returns a random insult directed at the mention user.\n- &&help - Returns this help text.\n- &&leaderboard - Returns the top 3 users.\n- &&lvl (@user) - Returns a user's level.\n- &&github - Returns link to the GitHub repository. \n- &&pixelbot -  Returns a sarcastic comment based on Pixel's comments.", inline=False)
                     await message.reply(embed=embedVar, mention_author=False)
 
                 elif message.content.startswith('&&pride'):
@@ -81,6 +80,12 @@ class MyClient(discord.Client):
 
                 elif message.content.find("69") != -1:
                     embedVar = discord.Embed(title="69?", description="Nice!", color=embed_col)
+                    await message.reply(embed=embedVar, mention_author=False)
+
+                elif message.content.startswith("&&pixelbot"):
+                    comments = ["It's Koala, what did you expect :p", "Go sleep", "Seems about right", "*insert a furry emote here*", "ffs xD", "*compains*", ":p", "*sends link to Reddit*", "*sends link to Twitter*", "nerd", "bc its Koala", "Koala, stop being a nerd", "*complains about Koala*", ":>", ":eyes:"]
+                    value = rdm.randint(0, len(comments) - 1)
+                    embedVar = discord.Embed(title="Imitating Pixel", description=comments[value] + ".", color=embed_col)
                     await message.reply(embed=embedVar, mention_author=False)
         else:
             new_user = User(user_name=message.author.name, user_lvl=5, user_id=message.author.id)
